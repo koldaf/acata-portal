@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Interest;
 use App\Models\CertificateDownload;
 use App\Models\EventCertificate;
+use App\Models\MembershipTypes;
 use Illuminate\Database\Eloquent\Relations\HasMany as RelationsHasMany;
 
 class Members extends Authenticatable

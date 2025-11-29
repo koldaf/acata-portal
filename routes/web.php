@@ -30,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/certificates', [DashboardController::class, 'certificates'])->name('member.certificates.download');
     Route::get('/interests', [DashboardController::class, 'interests'])->name('member.interests');
 
-    Route::get('/dashboard/request-certificate', [DashboardController::class,'requestCertificate'])->name('dashboard.request-certificate')
+    Route::get('/dashboard/request-certificate', [DashboardController::class,'requestCertificate'])->name('dashboard.request-certificate');
 });
 
 Route::get('/logout', function () {

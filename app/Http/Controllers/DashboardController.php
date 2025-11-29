@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\EventCertificate;
 use App\Models\CertificateDownload;
-
+use App\Models\MembershipTypes;
 
 class DashboardController extends Controller
 {
@@ -37,7 +37,11 @@ class DashboardController extends Controller
     }
     
     public function requestCertificate(){
-        return view('dashboard.request-certificate');
+        $user = Auth::user();
+        $member_type = $user->membership_type;
+        //dd($member_type);
+        $membershipType = MembershipTypes::where('membership_type', $member_type)->first()->toArray();
+        return view('dashboard.request-certificate')->with('member_type', $membershipType);
     }
     public function downloadCertificate(Request $request)
     {
