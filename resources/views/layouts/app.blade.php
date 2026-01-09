@@ -1,73 +1,91 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'ACATA Portal') - Association for Computer Adaptive Testing in Africa</title>
-    
+
     <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    
+
     <!-- Custom CSS -->
     <style>
-        .active{
+        .active {
             background-color: #79489F !important;
         }
-        .text-primary{
+
+        .text-primary {
             color: #CA1268 !important;
         }
-        .btn-outline-primary{
+
+        .btn-outline-primary {
             border-color: #CA1268 !important;
             color: #CA1268 !important;
         }
+
         .btn-outline-primary:hover {
             background-color: #CA1268 !important;
             color: #fff !important;
         }
-        .bg-primary, .btn-primary{
+
+        .bg-primary,
+        .btn-primary {
             background-color: #CA1268 !important;
             border-color: #CA1268 !important;
         }
+
         .gradient-bg {
             background: linear-gradient(135deg, #CA1268 0%, #764ba2 100%);
         }
+
         .navbar-brand {
             font-weight: 700;
         }
+
         .feature-icon {
             width: 4rem;
             height: 4rem;
             border-radius: .75rem;
         }
+
         .card-hover {
             transition: transform 0.2s ease-in-out;
         }
+
         .card-hover:hover {
             transform: translateY(-5px);
         }
+
         .footer {
-            background-color: #f8f9fa;
+            background-color: #000000;
+        }
+
+        .bg-light {
+            --bs-bg-opacity: 0.2;
+            background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
         }
     </style>
-    
+
     @stack('styles')
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark gradient-bg shadow">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
                 {{-- - <i class="bi bi-graph-up"></i> ACATA Portal --}}
-                <img src="{{ asset('img/acata-logo.png') }}" alt="ACATA Logo"/>
+                <img src="{{ asset('img/acata-logo.png') }}" alt="ACATA Logo" />
             </a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
@@ -86,7 +104,7 @@
                         <a class="nav-link" href="{{ route('resources') }}">Resources</a>
                     </li>-->
                 </ul>
-                
+
                 <ul class="navbar-nav">
                     @auth
                         <li class="nav-item dropdown">
@@ -97,7 +115,9 @@
                                 <li><a class="dropdown-item" href="{{ route('member.dashboard') }}">Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{{ route('member.profile') }}">Profile</a></li>
                                 <li><a class="dropdown-item" href="#">Certificates</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
@@ -130,7 +150,8 @@
             <div class="row">
                 <div class="col-lg-4 mb-3">
                     <h5>ACATA</h5>
-                    <p class="text-muted">Association for Computer Adaptive Testing in Africa - Advancing educational assessment technology across the continent.</p>
+                    <p class="text-muted">Association for Computer Adaptive Testing in Africa - Advancing educational
+                        assessment technology across the continent.</p>
                 </div>
                 <div class="col-lg-2 col-6 mb-3">
                     <h5>Quick Links</h5>
@@ -170,28 +191,29 @@
 
     <!-- Bootstrap 5.3.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- Theme Toggle Script -->
     <script>
-        (function() {
+        (function () {
             const storedTheme = localStorage.getItem('theme');
             const getPreferredTheme = () => {
                 if (storedTheme) return storedTheme;
                 return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             };
-            
-            const setTheme = function(theme) {
+
+            const setTheme = function (theme) {
                 document.documentElement.setAttribute('data-bs-theme', theme);
             };
-            
+
             setTheme(getPreferredTheme());
-            
+
             window.addEventListener('DOMContentLoaded', () => {
                 // Theme toggle functionality can be added here
             });
         })();
     </script>
-    
+
     @stack('scripts')
 </body>
+
 </html>
