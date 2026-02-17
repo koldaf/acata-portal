@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Interest;
 use App\Models\Members;
 use App\Models\MembershipTypes;
+use App\Models\Countries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -48,7 +49,11 @@ class AuthController extends Controller
 
     public function showRegistrationForm()
     {
-        return view('auth.register', ['interests' => Interest::all(), 'memtypes' => MembershipTypes::all()]);
+        return view('auth.register', [
+            'interests' => Interest::all(), 
+            'memtypes' => MembershipTypes::all(),
+            'countries' => Countries::all()
+        ]);
     }
 
     public function register(Request $request)

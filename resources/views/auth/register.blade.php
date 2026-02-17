@@ -193,11 +193,9 @@
                                     <select class="form-select @error('country') is-invalid @enderror" 
                                             id="country" name="country">
                                         <option value="">Select your country</option>
-                                        <option value="Nigeria" {{ old('country') == 'Nigeria' ? 'selected' : '' }}>Nigeria</option>
-                                        <option value="South Africa" {{ old('country') == 'South Africa' ? 'selected' : '' }}>South Africa</option>
-                                        <option value="Kenya" {{ old('country') == 'Kenya' ? 'selected' : '' }}>Kenya</option>
-                                        <option value="Ghana" {{ old('country') == 'Ghana' ? 'selected' : '' }}>Ghana</option>
-                                        <option value="Egypt" {{ old('country') == 'Egypt' ? 'selected' : '' }}>Egypt</option>
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country->country }}" {{ old('country') == $country->country ? 'selected' : '' }}>{{ $country->country }}</option>
+                                        @endforeach
                                         <!-- Add more African countries -->
                                     </select>
                                     @error('country')
