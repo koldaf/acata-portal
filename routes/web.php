@@ -10,7 +10,11 @@ use Illuminate\Session\Middleware\StartSession;
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit'); 
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::get('/password/reset', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [AuthController::class, 'reset'])->name('password.update'); 
 
 
 Route::get('/contact', [AuthController::class, 'showRegistrationForm'])->name('contact');

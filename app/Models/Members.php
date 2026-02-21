@@ -14,10 +14,12 @@ use App\Models\CertificateDownload;
 use App\Models\EventCertificate;
 use App\Models\MembershipTypes;
 use Illuminate\Database\Eloquent\Relations\HasMany as RelationsHasMany;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class Members extends Authenticatable
+class Members extends Authenticatable implements CanResetPasswordContract
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, canResetPassword;
 
     /**
      * The table associated with the model.
@@ -57,7 +59,7 @@ class Members extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
+        'password', 'remember_token',
     ];
 
     /**

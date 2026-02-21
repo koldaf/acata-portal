@@ -12,10 +12,10 @@
                         <div class="text-center mb-4">
                             <div class="feature-icon bg-primary bg-gradient text-white rounded-3 mx-auto mb-3 d-flex align-items-center justify-content-center"
                                 style="width: 4rem; height: 4rem;">
-                                <i class="bi bi-person-check fs-2"></i>
+                                <i class="bi bi-key fs-2"></i>
                             </div>
-                            <h2 class="fw-bold">Welcome Back</h2>
-                            <p class="text-muted">Sign in to your ACATA account</p>
+                            <h2 class="fw-bold">Retrieve Password</h2>
+                            <p class="text-muted">Enter your email to retrieve your password</p>
                         </div>
 
                         <!-- Session Status -->
@@ -34,7 +34,7 @@
 
 
                         <!-- Login Form -->
-                        <form method="POST" action="{{ route('login.submit') }}">
+                        <form method="POST" action="{{ route('password.email') }}">
                             @csrf
 
                             <!-- Email Address -->
@@ -50,29 +50,10 @@
                                 @enderror
                             </div>
 
-                            <!-- Password -->
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                    id="password" name="password" placeholder="Enter your password" required>
-                                @error('password')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-
-                            <!-- Remember Me & Forgot Password -->
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="remember">
-                                        Remember me
-                                    </label>
-                                </div>
-                                @if (Route::has('password.request'))
-                                    <a href="{{ route('password.request') }}" class="text-decoration-none">
-                                        Forgot password?
+                           
+                                @if (Route::has('login'))
+                                    <a href="{{ route('login') }}" class="text-decoration-none">
+                                        I now remember my password?
                                     </a>
                                 @endif
                             </div>
@@ -80,7 +61,7 @@
                             <!-- Submit Button -->
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Retrieve Password
                                 </button>
                             </div>
                         </form>
@@ -101,7 +82,7 @@
                         </div>
 
                         <!-- Additional Help -->
-                        <div class="text-center">
+                        <div class="text-center mb-4">
                             <small class="text-muted">
                                 Need help? <a href="{{ route('contact') }}" class="text-decoration-none">Contact support</a>
                             </small>

@@ -1,5 +1,5 @@
 <?php
-
+//some of the code in this file is based on the default Laravel authentication scaffolding, but has been customized to fit the specific needs of the application. The controller handles user registration, login, and password reset functionalities, as well as displaying the appropriate views for these actions. It also interacts with the Members model to create new member records and associate interests with them during registration.
 namespace App\Http\Controllers;
 use App\Models\Interest;
 use App\Models\Members;
@@ -8,6 +8,8 @@ use App\Models\Countries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -25,19 +27,14 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        //dd(Auth::attempt($credentials)); 
-
-       /* $user = Members::where('email', $request->email)->first();
-
-        if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user);
-            return redirect('/dashboard');
-        }*/
+        $remember = $request->has('remember') ? true : false;
 
         // Attempt to authenticate the user
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $remember)) {
             //dd(Auth::user());
             // Authentication passed...
+            $request->session()->regenerate();
+            
             return redirect()->intended('/dashboard');
         }
 
@@ -94,4 +91,51 @@ class AuthController extends Controller
         // Redirect to a desired location after registration
         return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
     }
+
+    //password reset methods
+    public function showLinkRequestForm(){
+        return view('auth.passwords.email');
+    }
+    public function sendResetLinkEmail(Request $request){
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+       
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+        return $status === Password::RESET_LINK_SENT
+                    ? back()->with(['status' => __($status)])
+                    : back()->with(['status' => "If that email address exists in our system, a password reset link has been sent to it."]);
+    }
+    public function showResetForm($token){
+        return view('auth.passwords.reset', ['token' => $token]);
+    }
+    /*public function reset(Request $request){
+        $request->validate([
+        */
+    public function reset(Request $request){
+        //dd($request->all());
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+
+                $user->setRememberToken(Str::random(60));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+                    ? redirect()->route('login')->with('status', __($status))
+                    : back()->withErrors(['email' => [__($status)]]);
+    }
 }
+
