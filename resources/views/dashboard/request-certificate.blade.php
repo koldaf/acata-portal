@@ -49,7 +49,7 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white border-0 py-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h2 class="card-title mb-1">
+                                <h2 class="card-title mb-1 fw-bold">
                                     <i class="bi bi-award text-warning me-2"></i>
                                     {{ $member_type['membership_type'] }} Certificate ({{ $member_type['cost'] }})
                                 </h2>
