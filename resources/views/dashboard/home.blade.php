@@ -72,12 +72,18 @@
                     <p class="text-muted mb-0">Here's your ACATA membership overview</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('member.profile') }}" class="btn btn-outline-primary">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil-square me-1"></i>Edit Profile
+                    </a>
+                    <a href="{{ route('dashboard.request-certificate') }}" class="btn btn-primary">
+                        <i class="bi bi-download me-1"></i>Get Certificate
+                    </a>
+                    {{-- <a href="{{ route('member.profile') }}" class="btn btn-outline-primary">
                         <i class="bi bi-pencil-square me-1"></i>Edit Profile
                     </a>
                     <a href="{{ route('dashboard.certificates') }}" class="btn btn-primary">
                         <i class="bi bi-download me-1"></i>Get Certificate
-                    </a>
+                    </a> --}}
                 </div>
             </div>
 
