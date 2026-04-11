@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,15 +12,25 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Interest;
 use App\Models\CertificateDownload;
+use App\Models\Event;
 use App\Models\EventCertificate;
+use App\Models\EventRegistration;
+use App\Models\LibraryResource;
 use App\Models\MembershipTypes;
+use App\Models\Payment;
+use App\Models\ActivityLog;
 use Illuminate\Database\Eloquent\Relations\HasMany as RelationsHasMany;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Carbon\Carbon;
 
 class Members extends Authenticatable implements CanResetPasswordContract
 {
     use HasFactory, Notifiable, canResetPassword;
+
+    public const ROLE_MEMBER = 'member';
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_SUPER_ADMIN = 'super_admin';
 
     /**
      * The table associated with the model.
@@ -51,6 +62,9 @@ class Members extends Authenticatable implements CanResetPasswordContract
         'profile_picture',
         'social_links',
         'created_on',
+        'role',
+        'role_assigned_by',
+        'role_assigned_at',
     ];
 
     /**
@@ -72,6 +86,7 @@ class Members extends Authenticatable implements CanResetPasswordContract
         'status' => 'string',
         'created_on' => 'date',
         'social_links' => 'array',
+        'role_assigned_at' => 'datetime',
     ];
 
     /**
@@ -161,6 +176,22 @@ class Members extends Authenticatable implements CanResetPasswordContract
     }
 
     /**
+     * Check if member has admin privileges.
+     */
+    public function isAdmin(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN], true);
+    }
+
+    /**
+     * Check if member is super admin.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN;
+    }
+
+    /**
      * Mark email as verified
      */
     public function markEmailAsVerified(): bool
@@ -214,6 +245,22 @@ class Members extends Authenticatable implements CanResetPasswordContract
     public function scopeByCountry($query, string $country)
     {
         return $query->where('country', $country);
+    }
+
+    /**
+     * Scope members by role.
+     */
+    public function scopeRole($query, string $role)
+    {
+        return $query->where('role', $role);
+    }
+
+    /**
+     * Scope for admin and super admin users.
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->whereIn('role', [self::ROLE_ADMIN, self::ROLE_SUPER_ADMIN]);
     }
 
     /**
@@ -317,11 +364,25 @@ class Members extends Authenticatable implements CanResetPasswordContract
             return null;
         }
 
-        if (filter_var($this->profile_picture, FILTER_VALIDATE_URL)) {
-            return $this->profile_picture;
+        $profilePicture = ltrim($this->profile_picture, '/');
+
+        if (filter_var($profilePicture, FILTER_VALIDATE_URL)) {
+            return $profilePicture;
         }
 
-        return asset('storage/profile_pictures/' . $this->profile_picture);
+        if (str_starts_with($profilePicture, 'storage/')) {
+            return route('member.profile.picture.view', ['filename' => basename($profilePicture)]);
+        }
+
+        if (str_starts_with($profilePicture, 'public/')) {
+            return route('member.profile.picture.view', ['filename' => basename($profilePicture)]);
+        }
+
+        if (str_starts_with($profilePicture, 'profile_pictures/')) {
+            return route('member.profile.picture.view', ['filename' => basename($profilePicture)]);
+        }
+
+        return route('member.profile.picture.view', ['filename' => basename($profilePicture)]);
     }
 
     /**
@@ -367,5 +428,110 @@ class Members extends Authenticatable implements CanResetPasswordContract
     public function hasEventCertificates(): bool
     {
         return $this->eventCertificates()->where('status', 'completed')->exists();
+    }
+
+    /**
+     * User who assigned this member's current role.
+     */
+    public function roleAssignedBy(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'role_assigned_by');
+    }
+
+    /**
+     * Event registrations for this member.
+     */
+    public function eventRegistrations(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class, 'member_id');
+    }
+
+    /**
+     * Resources uploaded by this member.
+     */
+    public function uploadedResources(): HasMany
+    {
+        return $this->hasMany(LibraryResource::class, 'uploaded_by');
+    }
+
+    /**
+     * Payments made by this member.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'member_id');
+    }
+
+    /**
+     * Get ACATA financial year period and dues grace cutoff.
+     */
+    public static function financialYearWindow(?Carbon $at = null): array
+    {
+        $date = $at ? $at->copy() : now();
+
+        $startYear = $date->month >= 8 ? $date->year : ($date->year - 1);
+        $start = Carbon::create($startYear, 8, 1, 0, 0, 0, $date->timezone);
+        $end = $start->copy()->addYear()->subDay()->endOfDay();
+        $graceEndsAt = $start->copy()->addDays(30)->endOfDay();
+
+        return [
+            'start' => $start,
+            'end' => $end,
+            'grace_ends_at' => $graceEndsAt,
+            'label' => $startYear . '/' . ($startYear + 1),
+        ];
+    }
+
+    /**
+     * Check if member has paid dues for current financial year.
+     */
+    public function hasPaidCurrentDues(?Carbon $at = null): bool
+    {
+        $window = self::financialYearWindow($at);
+
+        return $this->payments()
+            ->where('status', 'success')
+            ->where(function ($query) {
+                $query->where('payment_type', 'membership')
+                    ->orWhere('metadata->payment_code', 'MEMBERSHIP');
+            })
+            ->where(function ($query) use ($window) {
+                $query->whereBetween('paid_at', [$window['start'], $window['end']])
+                    ->orWhere(function ($fallbackQuery) use ($window) {
+                        $fallbackQuery->whereNull('paid_at')
+                            ->whereBetween('created_at', [$window['start'], $window['end']]);
+                    });
+            })
+            ->exists();
+    }
+
+    /**
+     * Check if dues gate should block this member right now.
+     */
+    public function shouldBeBlockedForDues(?Carbon $at = null): bool
+    {
+        if ($this->role !== self::ROLE_MEMBER) {
+            return false;
+        }
+
+        if ($this->hasPaidCurrentDues($at)) {
+            return false;
+        }
+
+        $window = self::financialYearWindow($at);
+        $date = $at ? $at->copy() : now();
+
+        return $date->gt($window['grace_ends_at']);
+    }
+
+
+    /**
+     * Activity models
+     */
+    public function recentActivities()
+    {
+        return $this->hasMany(ActivityLog::class, 'member_id')
+                ->latest()
+                ->limit(5);
     }
 }

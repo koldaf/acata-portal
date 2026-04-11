@@ -53,9 +53,16 @@
                                     <i class="bi bi-award text-warning me-2"></i>
                                     {{ $member_type['membership_type'] }} Certificate ({{ $member_type['cost'] }})
                                 </h2>
-                                <p class="text-muted mb-0">
-                                    <a href="{{ $member_type['url'] }}" title="Click to Request your Certificate" target="_blank">Request Certificate</a> 
-                                </p>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <form method="POST" action="{{ route('payments.start', 'MEMBERSHIP') }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary btn-sm">Pay Membership Fee</button>
+                                    </form>
+                                    <a href="{{ route('dashboard.payments') }}" class="btn btn-outline-primary btn-sm">Payment Catalog</a>
+                                    @if(!empty($member_type['url']))
+                                        <a href="{{ $member_type['url'] }}" title="Open hosted payment page" target="_blank" class="btn btn-outline-primary btn-sm">Hosted Checkout</a>
+                                    @endif
+                                </div>
                                 
                             </div>
                         </div>
@@ -63,7 +70,9 @@
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <div class="row g-3">
-                                        
+                                        <div class="col-12">
+                                            <p class="mb-0 text-muted">Use the integrated payment flow to generate a tracked transaction reference and redirect to the gateway. Hosted checkout remains available as a fallback.</p>
+                                        </div>
                                     </div>
                                 </div>
                                 

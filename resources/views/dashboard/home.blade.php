@@ -209,7 +209,7 @@
                                     </a>
                                 </div>
                                 <div class="col-md-6">
-                                    <a href="{{ route('events') }}" class="card card-hover border-0 text-decoration-none h-100">
+                                    <a href="{{ route('dashboard.events.index') }}" class="card card-hover border-0 text-decoration-none h-100">
                                         <div class="card-body text-center p-3">
                                             <div class="bg-info bg-opacity-10 rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                                 <i class="bi bi-calendar-event text-info fs-5"></i>
@@ -271,58 +271,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Recent Activity -->
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-primary border-0 py-3">
-                            <h5 class="card-title mb-0">
-                                <i class="bi bi-clock-history text-primary me-2"></i>
-                                Recent Activity
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item px-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="bi bi-check-lg text-success"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1">Profile updated</h6>
-                                            <p class="text-muted mb-0 small">You updated your professional information</p>
-                                        </div>
-                                        <small class="text-muted">2 hours ago</small>
-                                    </div>
-                                </div>
-                                <div class="list-group-item px-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="bi bi-award text-info"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1">Certificate downloaded</h6>
-                                            <p class="text-muted mb-0 small">You downloaded your membership certificate</p>
-                                        </div>
-                                        <small class="text-muted">1 day ago</small>
-                                    </div>
-                                </div>
-                                <div class="list-group-item px-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                            <i class="bi bi-calendar-event text-warning"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1">Event registration</h6>
-                                            <p class="text-muted mb-0 small">You registered for "CAT Conference 2024"</p>
-                                        </div>
-                                        <small class="text-muted">3 days ago</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>

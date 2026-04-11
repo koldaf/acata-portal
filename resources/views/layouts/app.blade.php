@@ -109,11 +109,22 @@
                     @auth
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
+                                <i class="bi bi-person-circle"></i> {{ Auth::user()->display_name }}
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('member.dashboard') }}">Dashboard</a></li>
                                 <li><a class="dropdown-item" href="{{ route('member.profile') }}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('dashboard.resources') }}">Resources</a></li>
+                                <li><a class="dropdown-item" href="{{ route('dashboard.payments') }}">Payments</a></li>
+                                @if(Auth::user()->isAdmin())
+                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.events.index') }}">Manage Events</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.resources.index') }}">Manage Resources</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.certificate-settings.index') }}">Certificate Settings</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.finance.index') }}">Finance Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.finance.payment-configurations.index') }}">Payment Configurations</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.finance.activity-logs.index') }}">Activity Logs</a></li>
+                                @endif
                                 <li><a class="dropdown-item" href="#">Certificates</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
@@ -188,7 +199,8 @@
             </div>
         </div>
     </footer>
-
+    <!--Jquery (optional, for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap 5.3.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

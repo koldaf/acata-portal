@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Authenticate
+class AdminMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,12 +16,10 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
-            if ($request->expectsJson()) {
-                abort(401, 'Unauthenticated.');
-            }
+        $user = Auth::user();
 
-            return redirect()->route('login');
+        if (!$user || !$user->isAdmin()) {
+            abort(403, 'You do not have permission to access this page.');
         }
 
         return $next($request);
